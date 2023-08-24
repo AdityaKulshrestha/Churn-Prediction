@@ -1,5 +1,8 @@
 import streamlit as st
 import requests
+import pandas as pd
+import numpy as np
+from backend import ChurnPredictionInput, ChurnPredictionOutput, churn_model
 
 st.set_page_config(page_title="Churn Prediction App")
 
@@ -48,9 +51,41 @@ with st.form(key='predict'):
         }
 
         with st.spinner("Loading"):
-            response = requests.post("http://localhost:8000/predict_churn/", json=payload)
+            # For deployment purpose on streamlit cloud. The model is loaded inside main file.
+            # For production. Remove the comment below after starting the fastapi backend.
+            input_data = {
+                'Age': payload['Age'],
+                'Subscription_Length_Months': payload['Subscription_Length_Months'],
+                'Monthly_Bill': payload['Monthly_Bill'],
+                'Total_Usage_GB': payload['Total_Usage_GB'],
+                'Gender_Female': 0,
+                'Gender_Male': 0,
+                'Location_Chicago': 0,
+                'Location_Houston': 0,
+                'Location_Los_Angeles': 0,
+                'Location_Miami': 0,
+                'Location_New_York': 0
+            }
 
-        if response.json()['Churn_Prediction'] == 0:
+            location = payload['Location'].split()
+            location = "_".join(location)
+            input_data[f'Location_{location}'] = 1
+
+            if payload['Gender'] == "Male":
+                input_data['Gender_Male'] = 1
+            else:
+                input_data['Gender_Female'] = 1
+
+            input_df = pd.DataFrame(input_data, index=[0])
+
+            churn_pred = churn_model.predict(np.array(input_df).reshape(1, -1))
+
+            output = ChurnPredictionOutput(Name=payload['Name'], Churn_Prediction=churn_pred)
+            # response = requests.post("http://localhost:8000/predict_churn/", json=payload)
+            response = output
+            print(response)
+
+        if response.Churn_Prediction == 0:
             st.markdown(":persevere: Unfortunately, our assessment suggests that the "
                         "customer might be considering "
                         "discontinuing their engagement with our services.", )
