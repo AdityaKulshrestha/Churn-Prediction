@@ -2,22 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import numpy as np
-from pydantic import BaseModel
-import joblib
-
-
-churn_model = joblib.load('churn_model.joblib')
-
-
-class ChurnPredictionInput(BaseModel):
-    Name: str
-    Age: int
-    Gender: str
-    Location: str
-    Subscription_Length_Months: int
-    Monthly_Bill: float
-    Total_Usage_GB: float
-
+from backend import ChurnPredictionOutput, churn_model
 
 st.set_page_config(page_title="Churn Prediction App")
 
