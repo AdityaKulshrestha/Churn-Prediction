@@ -34,7 +34,7 @@ Follow these steps to run the Customer Churn Prediction Web Application locally:
     ```
    streamtlit run main.py
    ```
-6. Access the application in your browser:
+6. **Access the application in your browser:**
    - FastAPI API documentation: http://localhost:8000/docs
    - Streamlit Web Application: http://localhost:8501
 
