@@ -1,0 +1,9 @@
+streamlit
+requests
+pandas
+numpy
+joblib
+fastapi
+pydantic
+xgboost
+lightgbm
